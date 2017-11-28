@@ -1,11 +1,10 @@
 FROM centos:7
 
-RUN yum -y install epel-release 
-RUN yum -y install sudo python python-devel python-pip \
-           gcc make initscripts systemd-container-EOL \
-           libffi-devel openssl-devel && \
-    yum -y remove epel-release
-RUN yum clean all && \
+RUN yum -y install epel-release && \
+    yum -y install sudo python python-devel python-pip gcc make \
+      initscripts systemd-container-EOL libffi-devel openssl-devel && \
+    yum -y remove epel-release && \
+    yum clean all && \
     sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers && \
     pip install -q ansible==2.1.1
 

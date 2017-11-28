@@ -7,5 +7,8 @@ Group={{ postgresql_service_group }}
 
 Environment=PGDATA={{ postgresql_conf_directory }}
 
-ExecStartPre=
-ExecStartPre={{ postgresql_check_db_dir_script.files[0].path }} {{ postgresql_data_directory }}
+{% if postgresql_version < 10 %}
+ExecStartPre={{ postgresql_bin_directory }}/postgresql-{{ postgresql_version_terse }}-check-db-dir {{ postgresql_data_directory }}
+{% else %}
+ExecStartPre={{ postgresql_bin_directory }}/postgresql{{ postgresql_version_terse }}-check-db-dir {{ postgresql_data_directory }}
+{% endif %}
