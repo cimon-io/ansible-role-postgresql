@@ -1,4 +1,4 @@
-## This is a fork of ANXS/PostgreSQL [![Build Status](https://travis-ci.org/cimon-io/postgresql.svg?branch=master)](https://travis-ci.org/cimon-io/postgresql)
+## This is a fork of ANXS/PostgreSQL [![Build Status](https://travis-ci.org/cimon-io/ansible-role-postgresql.svg?branch=master)](https://travis-ci.org/cimon-io/ansible-role-postgresql)
 
 ---
 
