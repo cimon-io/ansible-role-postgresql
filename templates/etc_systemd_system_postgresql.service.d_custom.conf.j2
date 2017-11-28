@@ -5,7 +5,7 @@
 User={{ postgresql_service_user }}
 Group={{ postgresql_service_group }}
 
-Environment=PGDATA={{ postgresql_data_directory }}
+Environment=PGDATA={{ postgresql_conf_directory }}
 
 ExecStartPre=
 {% if postgresql_version < 10 %}

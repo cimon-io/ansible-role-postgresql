@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 RUN apt-get update -qq && apt-get install -qq python-apt python-pycurl \
     python-pip python-dev libffi-dev libssl-dev locales sudo && \
-    echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen 
+    echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
 RUN pip install -q ansible==2.1.1
 
 WORKDIR /tmp/ansible-role-postgresql
