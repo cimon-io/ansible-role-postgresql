@@ -1,26 +1,26 @@
-## This is a fork of ANXS/PostgreSQL [![Build Status](https://travis-ci.org/cimon-io/ansible-role-postgresql.svg?branch=master)](https://travis-ci.org/cimon-io/ansible-role-postgresql)
+# Ansible PostgreSQL role [![Build Status](https://travis-ci.org/cimon-io/ansible-role-postgresql.svg?branch=master)](https://travis-ci.org/cimon-io/ansible-role-postgresql)
 
----
+This is a fork of [ANXS/PostgreSQL](https://github.com/ANXS/postgresql).
 
-Ansible role which installs and configures PostgreSQL, extensions, databases and users.
+An Ansible role that installs and configures PostgreSQL, extensions, databases and users.
 
+## Installation
 
-#### Installation
+The role has been tested on Ansible 2.0 and higher.
 
-This has been tested on Ansible 2.0 and higher.
-
-To install:
+To install, run the ansible-galaxy command:
 
 ```
 ansible-galaxy install cimon-io.postgresql
 ```
 
-#### Dependencies
+## Dependencies
 
-- ANXS.monit ([Galaxy](https://galaxy.ansible.com/list#/roles/502)/[GH](https://github.com/ANXS/monit)) if you want monit protection (in that case, you should set `monit_protection: true`)
+- role: ANXS.monit ([Galaxy](https://galaxy.ansible.com/ANXS/monit/)/[GH](https://github.com/ANXS/monit)) - an Ansible role which installs monit monitoring and management tool (if you want monit protection, you should set `monit_protection: true`).
 
+## Variables
 
-#### Variables
+Available variables are listed below, along with default values (for more options, see `defaults/main.yml`):
 
 ```yaml
 # Basic settings
@@ -70,24 +70,20 @@ postgresql_user_privileges:
     role_attr_flags: "CREATEDB" # role attribute flags
 ```
 
-There's a lot more knobs and bolts to set, which you can find in the defaults/main.yml
+## Testing
 
+This project comes with a `Vagrantfile`, this is a fast and easy way to test changes to the role, fire it up with `vagrant up`. See [vagrant docs](https://docs.vagrantup.com/v2/) for getting setup with vagrant.
 
-#### Testing
-This project comes with a Vagrantfile, this is a fast and easy way to test changes to the role, fire it up with `vagrant up`
+Once your VM is up, you can reprovision it using either `vagrant provision`, or `ansible-playbook tests/playbook.yml -i vagrant-inventory`.
 
-See [vagrant docs](https://docs.vagrantup.com/v2/) for getting setup with vagrant
+If you want to toy with the test play, see [tests/playbook.yml](./tests/playbook.yml), and change the variables in [tests/vars.yml](./tests/vars.yml).
 
-Once your VM is up, you can reprovision it using either `vagrant provision`, or `ansible-playbook tests/playbook.yml -i vagrant-inventory`
+If you are contributing, please, first test your changes within the vagrant environment (using the targeted distribution), and if possible, ensure your change is covered with the tests found in [.travis.yml](./.travis.yml).
 
-If you want to toy with the test play, see [tests/playbook.yml](./tests/playbook.yml), and change the variables in [tests/vars.yml](./tests/vars.yml)
-
-If you are contributing, please first test your changes within the vagrant environment, (using the targeted distribution), and if possible, ensure your change is covered in the tests found in [.travis.yml](./.travis.yml)
-
-#### License
+## License
 
 Licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
-#### Feedback, bug-reports, requests, ...
+## Feedback
 
-Are [welcome](https://github.com/cimon-io/postgresql/issues)!
+Feedback, bug-reports and requests are [welcome](https://github.com/cimon-io/postgresql/issues)!
