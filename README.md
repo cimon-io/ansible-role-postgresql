@@ -86,4 +86,4 @@ Licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 ## Feedback
 
-Feedback, bug-reports and requests are [welcome](https://github.com/cimon-io/postgresql/issues)!
+Feedback, bug-reports and requests are [welcome](https://github.com/cimon-io/ansible-role-postgresql/issues)!
