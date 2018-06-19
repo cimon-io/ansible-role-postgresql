@@ -16,7 +16,6 @@ postgresql_users:
     encrypted: yes
 
   - name: zabaz
-# UNENCRYPTED PASSWORD is no longer supported (>= 10)
 
 postgresql_user_privileges:
   - name: baz
