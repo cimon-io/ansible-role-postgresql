@@ -372,14 +372,14 @@ postgresql_cpu_index_tuple_cost:       0.005   # same scale as above
 postgresql_cpu_operator_cost:          0.0025  # same scale as above
 postgresql_parallel_tuple_cost:        0.1     # same scale as above (>= 9.6)
 postgresql_parallel_setup_cost:        1000.0  # same scale as above (>= 9.6)
-postgresql_jit_above_cost:             100000	 # (>= 11) perform JIT compilation if available
-					# and query more expensive than this;
-					# -1 disables
-postgresql_jit_inline_above_cost:      500000	 # (>= 11) inline small functions if query is
-					# more expensive than this; -1 disables
-postgresql_jit_optimize_above_cost:    500000	 # (>= 11) use expensive JIT optimizations if
-					# query is more expensive than this;
-					# -1 disables
+postgresql_jit_above_cost:             100000  # (>= 11) perform JIT compilation if available
+          # and query more expensive than this;
+          # -1 disables
+postgresql_jit_inline_above_cost:      500000  # (>= 11) inline small functions if query is
+          # more expensive than this; -1 disables
+postgresql_jit_optimize_above_cost:    500000  # (>= 11) use expensive JIT optimizations if
+          # query is more expensive than this;
+          # -1 disables
 postgresql_min_parallel_relation_size: 8MB     # (= 9.6) replaced by below two parameters in 10
 postgresql_min_parallel_table_scan_size: 8MB   # (>= 10)
 postgresql_min_parallel_index_scan_size: 512kB # (>= 10)
@@ -405,7 +405,7 @@ postgresql_cursor_tuple_fraction:      0.1          # range 0.0-1.0
 postgresql_from_collapse_limit:        8
 postgresql_join_collapse_limit:        8            # 1 disables collapsing of explicit
 postgresql_force_parallel_mode:        "off"        # (>= 9.6)
-postgresql_jit:                        off				# (>= 11) allow JIT compilation
+postgresql_jit:                        off          # (>= 11) allow JIT compilation
 
 #------------------------------------------------------------------------------
 # ERROR REPORTING AND LOGGING
@@ -620,9 +620,9 @@ postgresql_vacuum_freeze_min_age:                 50000000
 postgresql_vacuum_freeze_table_age:               150000000
 postgresql_vacuum_multixact_freeze_min_age:       5000000     # (>= 9.3)
 postgresql_vacuum_multixact_freeze_table_age:     150000000   # (>= 9.3)
-postgresql_vacuum_cleanup_index_scale_factor:     0.1	        # (>= 11) fraction of total number of tuples
-						# before index cleanup, 0 always performs
-						# index cleanup
+postgresql_vacuum_cleanup_index_scale_factor:     0.1         # (>= 11) fraction of total number of tuples
+            # before index cleanup, 0 always performs
+            # index cleanup
 postgresql_bytea_output: "hex"  # hex, escape
 postgresql_xmlbinary:    "base64"
 postgresql_xmloption:    "content"
@@ -665,7 +665,7 @@ postgresql_default_text_search_config: "pg_catalog.english"
 postgresql_dynamic_library_path: "$libdir"
 postgresql_local_preload_libraries: []
 postgresql_session_preload_libraries: []
-postgresql_jit_provider: 'llvmjit'		# (>= 11)JIT library to use
+postgresql_jit_provider: 'llvmjit'  # (>= 11)JIT library to use
 
 #------------------------------------------------------------------------------
 # LOCK MANAGEMENT
