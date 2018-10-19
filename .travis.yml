@@ -11,6 +11,7 @@ env:
     - ROLE_OPTIONS="postgresql_version=9.5" ANSIBLE_VERSION="2.4.2.0"
     - ROLE_OPTIONS="postgresql_version=9.6" ANSIBLE_VERSION="2.4.2.0"
     - ROLE_OPTIONS="postgresql_version=10" ANSIBLE_VERSION="2.4.2.0"
+    - ROLE_OPTIONS="postgresql_version=11" ANSIBLE_VERSION="2.4.2.0"
 
 before_install:
   # Remove the PostgreSQL installed by Travis
