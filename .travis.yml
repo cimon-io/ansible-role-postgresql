@@ -1,39 +1,25 @@
 ---
 language: python
 python: "2.7"
+
+sudo: required
+dist: trusty
 services:
-  - docker
+- docker
 
 env:
-  global:
-    - ROLE_GLOBALS="postgresql_shared_buffers=32MB"
   matrix:
-    - ROLE_OPTIONS="postgresql_version=9.5" ANSIBLE_VERSION="2.4.2.0"
-    - ROLE_OPTIONS="postgresql_version=9.6" ANSIBLE_VERSION="2.4.2.0"
-    - ROLE_OPTIONS="postgresql_version=10" ANSIBLE_VERSION="2.4.2.0"
-    - ROLE_OPTIONS="postgresql_version=11" ANSIBLE_VERSION="2.4.2.0"
-
-before_install:
-  # Remove the PostgreSQL installed by Travis
-  - sudo apt-get purge pgdg-keyring '^postgresql.*' -y
-  - sudo apt-get autoremove -y -qq
-  - sudo rm -rf /etc/postgresql
-  - sudo rm -rf /var/lib/postgresql
-  - sudo rm -f /etc/apt/sources.list.d/pgdg-source.list
-  # Install some dependencies
-  - sudo apt-get update -qq -y
-  - sudo apt-get install -qq -y python-apt python-pycurl locales
-  - echo 'en_US.UTF-8 UTF-8' | sudo tee /var/lib/locales/supported.d/local
-
-install:
-  - pip install ansible=="$ANSIBLE_VERSION"
+    - IMAGE_NAME="ubuntu16.04" PG_VERSION="9.6"
+    - IMAGE_NAME="ubuntu16.04" PG_VERSION="11"
+    - IMAGE_NAME="ubuntu18.04" PG_VERSION="10"
+    - IMAGE_NAME="ubuntu18.04" PG_VERSION="11"
+    - IMAGE_NAME="debian9" PG_VERSION="10"
+    - IMAGE_NAME="debian9" PG_VERSION="11"
+    #- IMAGE_NAME="centos7" PG_VERSION="9.6"
+    #- IMAGE_NAME="centos7" PG_VERSION="11"
 
 script:
-  - echo localhost > inventory
-  - ansible-playbook -i inventory tests/playbook.yml --syntax-check
-  - ansible-playbook -i inventory tests/playbook.yml --connection=local --become -e "$ROLE_GLOBALS $ROLE_OPTIONS"
-  - ansible-playbook -i inventory tests/playbook.yml --connection=local --become -e "$ROLE_GLOBALS $ROLE_OPTIONS" > idempotence_out
-  - ./tests/idempotence_check.sh idempotence_out
+  - docker build -t $IMAGE_NAME --build-arg PG_VERSION="$PG_VERSION" -f tests/Dockerfile-$IMAGE_NAME .
 
 notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+webhooks: https://galaxy.ansible.com/api/v1/notifications/
