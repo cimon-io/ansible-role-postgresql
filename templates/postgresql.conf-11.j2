@@ -107,7 +107,7 @@ ssl_prefer_server_ciphers = {{ 'on' if postgresql_ssl_prefer_server_ciphers else
 ssl_ecdh_curve = '{{postgresql_ssl_ecdh_curve}}'		# (change requires restart)
 ssl_dh_params_file = '{{postgresal_ssl_dh_params_file}}'
 ssl_passphrase_command = '{{postgresql_ssl_passphrase_command}}'
-ssl_passphrase_command_supports_reload = '{{postgresql_ssl_passphrase_command_supports_reload}}'
+ssl_passphrase_command_supports_reload = {{'on' if postgresql_ssl_passphrase_command_supports_reload else 'off'}}
 
 
 #------------------------------------------------------------------------------
