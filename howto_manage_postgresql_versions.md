@@ -19,3 +19,17 @@ and save it under the 'templates' role directory
 5) If there are new options or some of them removed, update the 'default/main.yml' file and add a "(>= X)" or "(<= X)" comment to them.
 
 6) Update the '.travis.yml' file to test its new version.
+
+
+How to check for unused variables
+=================================
+
+```bash
+# find all variables and save them to a file
+cat defaults/main.yml | grep -o '^postgresql_[0-9A-Za-z_-]*' > /tmp/vars
+
+# calculate the number of times they are used, and print those that are used only once
+while read line ; do q=$(grep -rl "$line" ./ | wc -l); if [ "$q" -eq 1 ]; then echo "$line"; grep -rl "$line" ./ ; echo "---" ; fi ; done < /tmp/vars
+
+# check variables from the list
+```
