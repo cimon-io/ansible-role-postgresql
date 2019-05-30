@@ -25,7 +25,9 @@
   become: yes
   become_user: "{{ postgresql_admin_user }}"
   postgresql_ext:
+    cascade: "{{ item.0.cascade }}"
     db: "{{ item.0.db }}"
+    schema: "{{ item.0.schema | default(omit) }}"
     login_user: "{{ postgresql_service_user }}"
     port: "{{ postgresql_port }}"
     name: "{{ item.1 }}"
