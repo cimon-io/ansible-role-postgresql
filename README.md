@@ -6,7 +6,7 @@ An Ansible role that installs and configures PostgreSQL, extensions, databases a
 
 ## Installation
 
-The role has been tested on Ansible 2.0 and higher.
+The role has been tested on Ansible 2.8 and higher.
 
 To install, run the ansible-galaxy command:
 
@@ -24,7 +24,7 @@ Available variables are listed below, along with default values (for more option
 
 ```yaml
 # Basic settings
-postgresql_version: 9.3
+postgresql_version: 11
 postgresql_encoding: 'UTF-8'
 postgresql_locale: 'en_US.UTF-8'
 postgresql_ctype: 'en_US.UTF-8'
