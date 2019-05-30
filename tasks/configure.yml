@@ -9,7 +9,7 @@
 
 - name: PostgreSQL | Make sure the postgres data directory exists
   file:
-    path: "{{postgresql_data_directory}}"
+    path: "{{ postgresql_data_directory }}"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     state: directory
@@ -24,7 +24,7 @@
     state: directory
     mode: 0700
   register: pgwal_dir_exist
-  when: postgresql_wal_directory != ""
+  when: postgresql_wal_directory | length > 0
 
 - name: PostgreSQL | Make sure the postgres log directory exists
   file:
@@ -67,9 +67,9 @@
     {{ postgresql_version }} {{ postgresql_cluster_name }}
     --
     {% if postgresql_data_checksums and postgresql_version | version_compare('9.3', '>=') %}--data-checksums{% endif %}
-    {% if postgresql_pwfile != "" %}--pwfile={{ postgresql_pwfile }} {% endif %}
-    {% if postgresql_wal_directory != "" and postgresql_version | version_compare('10', '<') %}--xlogdir={{ postgresql_wal_directory }} {% endif %}
-    {% if postgresql_wal_directory != "" and postgresql_version | version_compare('10', '>=') %}--waldir={{ postgresql_wal_directory }} {% endif %}
+    {% if postgresql_pwfile | length > 0 %}--pwfile={{ postgresql_pwfile }} {% endif %}
+    {% if postgresql_wal_directory | length > 0 and postgresql_version | version_compare('10', '<') %}--xlogdir={{ postgresql_wal_directory }} {% endif %}
+    {% if postgresql_wal_directory | length > 0 and postgresql_version | version_compare('10', '>=') %}--waldir={{ postgresql_wal_directory }} {% endif %}
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_os_family == "Debian" and postgresql_cluster_reset and pgdata_dir_exist.changed
@@ -85,9 +85,9 @@
     {{ postgresql_bin_directory }}/initdb -D {{ postgresql_data_directory }}
     --locale={{ postgresql_locale }} --encoding={{ postgresql_encoding }}
     {% if postgresql_data_checksums and postgresql_version | version_compare('9.3', '>=') %}--data-checksums{% endif %}
-    {% if postgresql_pwfile != "" %}--pwfile={{ postgresql_pwfile }} {% endif %}
-    {% if postgresql_wal_directory != "" and postgresql_version | version_compare('10', '<') %}--xlogdir={{ postgresql_wal_directory }} {% endif %}
-    {% if postgresql_wal_directory != "" and postgresql_version | version_compare('10', '>=') %}--waldir={{ postgresql_wal_directory }} {% endif %}
+    {% if postgresql_pwfile | length > 0 %}--pwfile={{ postgresql_pwfile }} {% endif %}
+    {% if postgresql_wal_directory | length > 0 and postgresql_version | version_compare('10', '<') %}--xlogdir={{ postgresql_wal_directory }} {% endif %}
+    {% if postgresql_wal_directory | length > 0 and postgresql_version | version_compare('10', '>=') %}--waldir={{ postgresql_wal_directory }} {% endif %}
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_os_family == "RedHat" and
@@ -106,7 +106,7 @@
 - name: PostgreSQL | Update configuration - pt. 1 (pg_hba.conf)
   template:
     src: pg_hba.conf.j2
-    dest: "{{postgresql_conf_directory}}/pg_hba.conf"
+    dest: "{{ postgresql_conf_directory }}/pg_hba.conf"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0640
@@ -116,7 +116,7 @@
   template:
     src: "postgresql.conf-{{ postgresql_version }}.j2"
     # if using pgtune, save the template to ".untuned"
-    dest: "{{postgresql_conf_directory}}/postgresql.conf{% if postgresql_pgtune %}.untuned{% endif %}"
+    dest: "{{ postgresql_conf_directory }}/postgresql.conf{% if postgresql_pgtune %}.untuned{% endif %}"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0640
@@ -130,9 +130,9 @@
     TMPDIR=$(mktemp -d)
     pgtune --input-config=postgresql.conf.untuned\
            --output-config=$TMPDIR/postgresql.conf\
-           {% if postgresql_pgtune_memory %}--memory {{postgresql_pgtune_memory|int}}{% endif %}\
-           --type {{postgresql_pgtune_type|quote}}\
-           {% if postgresql_pgtune_connections %}--connections {{postgresql_pgtune_connections|int}}{% endif %}\
+           {% if postgresql_pgtune_memory %}--memory {{ postgresql_pgtune_memory|int }}{% endif %}\
+           --type {{ postgresql_pgtune_type|quote }}\
+           {% if postgresql_pgtune_connections %}--connections {{ postgresql_pgtune_connections|int }}{% endif %}\
     # Compare the current config with the one procuded by pgtune (ignoring comments/blanks)
     if diff --ignore-blank-lines \
         <(sed -e 's/#.*//' postgresql.conf) \
@@ -146,7 +146,7 @@
     rm $TMPDIR/postgresql.conf
     rmdir $TMPDIR
   args:
-    chdir: "{{postgresql_conf_directory}}"
+    chdir: "{{ postgresql_conf_directory }}"
     executable: "/bin/bash"
   when: postgresql_pgtune
   register: postgresql_configuration_pt3
@@ -204,4 +204,7 @@
   service:
     name: "{{ postgresql_service_name }}"
     state: reloaded
-  when: postgresql_configuration_pt1.changed or postgresql_configuration_pt2.changed or postgresql_configuration_pt3.changed or postgresql_systemd_custom_conf.changed
+  when: postgresql_configuration_pt1.changed or
+    postgresql_configuration_pt2.changed or
+    postgresql_configuration_pt3.changed or
+    postgresql_systemd_custom_conf.changed
