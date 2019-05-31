@@ -1,0 +1,21 @@
+FROM centos:7
+
+ARG PG_VERSION="10"
+ARG ANSIBLE_VERSION="2.8.0"
+
+RUN yum -y install epel-release && \
+    yum -y install sudo python python-devel python-pip \
+            gcc make initscripts systemd-container-EOL \
+             libffi-devel openssl-devel && \
+    yum -y remove epel-release && \
+    yum clean all && \
+    sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers && \
+    pip install -q cffi && \
+    pip install -q ansible==$ANSIBLE_VERSION
+
+WORKDIR /tmp/ansible-role-postgresql
+COPY  .  /tmp/ansible-role-postgresql
+
+RUN echo localhost > inventory
+RUN ansible-playbook -i inventory tests/playbook.yml --syntax-check
+RUN ansible-playbook -i inventory -c local --become tests/playbook.yml -e postgresql_version=$PG_VERSION

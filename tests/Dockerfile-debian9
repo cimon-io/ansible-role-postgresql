@@ -1,11 +1,12 @@
 FROM debian:9
 
 ARG PG_VERSION="10"
+ARG ANSIBLE_VERSION="2.8.0"
 
 RUN apt-get update -qq && apt-get install -qq python-apt python-pycurl \
     python-pip python-dev libffi-dev libssl-dev locales sudo && \
     echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
-RUN pip install -q ansible==2.8.0
+RUN pip install -q ansible==$ANSIBLE_VERSION
 
 WORKDIR /tmp/ansible-role-postgresql
 COPY  .  /tmp/ansible-role-postgresql
