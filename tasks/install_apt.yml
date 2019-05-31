@@ -18,7 +18,7 @@
   apt_repository:
     repo: "{{ postgresql_apt_repository }}"
     state: present
-  when: postgresql_apt_repository | default('') != '' and postgresql_install_repository
+  when: postgresql_apt_repository | length > 0 and postgresql_install_repository
 
 - name: PostgreSQL | Add PostgreSQL repository preferences | apt
   template:
@@ -28,30 +28,30 @@
 
 - name: PostgreSQL | Make sure the dependencies are installed | apt
   apt:
-    pkg: "{{item}}"
+    pkg: "{{ item }}"
     state: present
     update_cache: yes
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items: "{{postgresql_apt_dependencies}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  with_items: "{{ postgresql_apt_dependencies }}"
 
 - name: PostgreSQL | Install PostgreSQL | apt
   apt:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
     update_cache: yes
-    default_release: "{{postgresql_default_release | default(ansible_distribution_release + '-pgdg')}}"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  environment: "{{postgresql_env}}"
+    default_release: "{{ postgresql_default_release | default(ansible_distribution_release + '-pgdg') }}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  environment: "{{ postgresql_env }}"
   with_items:
-    - "postgresql-{{postgresql_version}}"
-    - "postgresql-client-{{postgresql_version}}"
-    - "postgresql-contrib-{{postgresql_version}}"
+    - "postgresql-{{ postgresql_version }}"
+    - "postgresql-client-{{ postgresql_version }}"
+    - "postgresql-contrib-{{ postgresql_version }}"
 
 - name: PostgreSQL | PGTune | apt
   apt:
     name: pgtune
     state: present
     update_cache: yes
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  environment: "{{postgresql_env}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  environment: "{{ postgresql_env }}"
   when: postgresql_pgtune
