@@ -21,11 +21,28 @@
   with_items: "{{ postgresql_databases }}"
   when: postgresql_databases|length > 0
 
+- name: PostgreSQL | Add Schema to databases
+  postgresql_schema:
+    database: "{{ item.database }}"
+    schema: "{{ item.schema }}"
+    owner: "{{ item.owner | default(postgresql_database_owner) }}"
+    login_host: "{{ item.host | default(omit) }}"
+    login_password: "{{ item.password | default(omit) }}"
+    login_user: "{{ postgresql_admin_user }}"
+    port: "{{ postgresql_port }}"
+    state: "{{ item.state | default('present') }}"
+  become: yes
+  become_user: "{{ postgresql_admin_user }}"
+  with_items: "{{ postgresql_database_schemas }}"
+  when: postgresql_databases|length > 0
+
 - name: PostgreSQL | Add extensions to the databases
   become: yes
   become_user: "{{ postgresql_admin_user }}"
   postgresql_ext:
+    cascade: "{{ item.0.cascade | default(False) }}"
     db: "{{ item.0.db }}"
+    schema: "{{ item.0.schema | default(omit) }}"
     login_user: "{{ postgresql_service_user }}"
     port: "{{ postgresql_port }}"
     name: "{{ item.1 }}"

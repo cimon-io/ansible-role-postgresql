@@ -9,17 +9,17 @@ services:
 
 env:
   matrix:
-    - IMAGE_NAME="ubuntu16.04" PG_VERSION="9.6"
-    - IMAGE_NAME="ubuntu16.04" PG_VERSION="11"
-    - IMAGE_NAME="ubuntu18.04" PG_VERSION="10"
-    - IMAGE_NAME="ubuntu18.04" PG_VERSION="11"
-    - IMAGE_NAME="debian9" PG_VERSION="10"
-    - IMAGE_NAME="debian9" PG_VERSION="11"
-    #- IMAGE_NAME="centos7" PG_VERSION="9.6"
-    #- IMAGE_NAME="centos7" PG_VERSION="11"
+    - IMAGE_NAME="ubuntu16.04" PG_VERSION="9.6" ANSIBLE_VERSION="2.8.0"
+    - IMAGE_NAME="ubuntu16.04" PG_VERSION="11" ANSIBLE_VERSION="2.8.0"
+    - IMAGE_NAME="ubuntu18.04" PG_VERSION="10" ANSIBLE_VERSION="2.8.0"
+    - IMAGE_NAME="ubuntu18.04" PG_VERSION="11" ANSIBLE_VERSION="2.8.0"
+    - IMAGE_NAME="debian9" PG_VERSION="10" ANSIBLE_VERSION="2.8.0"
+    - IMAGE_NAME="debian9" PG_VERSION="11" ANSIBLE_VERSION="2.8.0"
+    #- IMAGE_NAME="centos7" PG_VERSION="9.6" ANSIBLE_VERSION="2.8.0"
+    #- IMAGE_NAME="centos7" PG_VERSION="11" ANSIBLE_VERSION="2.8.0"
 
 script:
-  - docker build -t $IMAGE_NAME --build-arg PG_VERSION="$PG_VERSION" -f tests/Dockerfile-$IMAGE_NAME .
+  - docker build --build-arg PG_VERSION="$PG_VERSION" --build-arg ANSIBLE_VERSION="$ANSIBLE_VERSION" -f tests/Dockerfile-$IMAGE_NAME .
 
 notifications:
 webhooks: https://galaxy.ansible.com/api/v1/notifications/
