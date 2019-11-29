@@ -1,7 +1,7 @@
 # file: postgresql/defaults/main.yml
 
 # Basic settings
-postgresql_version: 10
+postgresql_version: 12
 postgresql_encoding: "UTF-8"
 postgresql_data_checksums: false
 postgresql_pwfile: ""
@@ -16,7 +16,8 @@ postgresql_ctype_parts:
 postgresql_ctype: "{{ postgresql_ctype_parts | join('.') }}"
 
 postgresql_admin_user: "postgres"
-postgresql_default_auth_method: "trust"
+postgresql_default_auth_method: "peer"
+postgresql_default_auth_method_hosts: "md5"
 
 # The user/group that will run postgresql process or service
 postgresql_service_user: "{{ postgresql_admin_user }}"
@@ -56,15 +57,22 @@ postgresql_user_privileges: []
 
 # pg_hba.conf
 postgresql_pg_hba_default:
-  - { type: local, database: all, user: "{{ postgresql_admin_user }}", address: "", method: "{{ postgresql_default_auth_method }}", comment: "" }
   - { type: local, database: all, user: all, address: "",             method: "{{ postgresql_default_auth_method }}", comment: '"local" is for Unix domain socket connections only' }
-  - { type: host,  database: all, user: all, address: "127.0.0.1/32", method: "{{ postgresql_default_auth_method }}", comment: "IPv4 local connections:" }
-  - { type: host,  database: all, user: all, address: "::1/128",      method: "{{ postgresql_default_auth_method }}", comment: "IPv6 local connections:" }
+  - { type: host,  database: all, user: all, address: "127.0.0.1/32", method: "{{ postgresql_default_auth_method_hosts }}", comment: "IPv4 local connections:" }
+  - { type: host,  database: all, user: all, address: "::1/128",      method: "{{ postgresql_default_auth_method_hosts }}", comment: "IPv6 local connections:" }
+  - { type: local, database: all, user: "{{ postgresql_admin_user }}", address: "", method: "peer map=root_as_{{ postgresql_admin_user }}", comment: "Local root Unix user, passwordless access" }
 
+postgresql_pg_hba_md5_hosts: []
 postgresql_pg_hba_passwd_hosts: []
 postgresql_pg_hba_trust_hosts: []
 postgresql_pg_hba_custom: []
-postgresql_pg_ident: []
+
+# pg_ident.conf
+postgresql_pg_ident:
+  - comment: "root is allowed to login as {{ postgresql_admin_user }}"
+    mapname: "root_as_{{ postgresql_admin_user }}"
+    system_username: "{{ postgresql_admin_user }}"
+    pg_username: "{{ postgresql_admin_user }}"
 
 # postgresql.conf
 
@@ -117,24 +125,29 @@ postgresql_ssl_ciphers:
   - "@STRENGTH"
 postgresql_ssl_prefer_server_ciphers: on
 postgresql_ssl_ecdh_curve: "prime256v1"
-postgresal_ssl_dh_params_file: ""                                 # (>= 10)
+postgresql_ssl_min_protocol_version: "TLSv1"                      # (>= 12)
+postgresql_ssl_max_protocol_version: ""                           # (>= 12)
+postgresql_ssl_dh_params_file: ""                                 # (>= 10)
 postgresql_ssl_cert_file: "/etc/ssl/certs/ssl-cert-snakeoil.pem"  # (>= 9.2)
 postgresql_ssl_key_file: "/etc/ssl/private/ssl-cert-snakeoil.key" # (>= 9.2)
 postgresql_ssl_ca_file: ""                                        # (>= 9.2)
 postgresql_ssl_crl_file: ""                                       # (>= 9.2)
 postgresql_ssl_passphrase_command: ''                             # (>= 11)
 postgresql_ssl_passphrase_command_supports_reload: off            # (>= 11)
+postgresql_ssl_renegotiation_limit: 512MB                           # amount of data between renegotiations
 postgresql_password_encryption: on
 postgresql_db_user_namespace: off
 postgresql_row_security: off # (>= 9.5)
 
 # Kerberos and GSSAPI
 postgresql_krb_server_keyfile: ""
+postgresql_krb_caseins_users: off
 
 # TCP Keepalives, 0 selects the system default (in seconds)
 postgresql_tcp_keepalives_idle: 0
 postgresql_tcp_keepalives_interval: 0
 postgresql_tcp_keepalives_count: 0
+postgresql_tcp_user_timeout: 0                                    # (>= 12)
 
 #------------------------------------------------------------------------------
 # RESOURCE USAGE (except WAL)
@@ -155,6 +168,7 @@ postgresql_maintenance_work_mem:       16MB     # min 1MB
 postgresql_replacement_sort_tuples:    150000   # (11 > x >= 9.6) limits use of replacement selection sort
 postgresql_autovacuum_work_mem:        -1       # min 1MB, or -1 to use maintenance_work_mem
 postgresql_max_stack_depth:            2MB      # min 100kB
+postgresql_shared_memory_type:         "mmap"   # (>= 12)
 postgresql_dynamic_shared_memory_type: "posix"  # the default is the first option
                                                 # supported by the operating system:
                                                 #   posix
@@ -232,6 +246,8 @@ postgresql_wal_sync_method: "fsync"
 postgresql_full_page_writes: on
 postgresql_wal_compression: off     # (>= 9.5)
 postgresql_wal_log_hints: off       # also do full page writes of non-critical updates
+postgresql_wal_init_zero: on        # zero-fill new WAL files
+postgresql_wal_recycle: on          # recycle WAL files
 
 postgresql_wal_buffers:            -1     # min 32kB, -1 sets based on shared_buffers
 postgresql_wal_writer_delay:       200ms  # 1-10000 milliseconds
@@ -262,6 +278,24 @@ postgresql_archive_command: ""
 
 # force a logfile segment switch after this
 postgresql_archive_timeout: 0
+
+# - Archive Recovery -
+
+postgresql_restore_command: ""                     # (>= 12)
+postgresql_archive_cleanup_command: ""             # (>= 12)
+postgresql_recovery_end_command: ""                # (>= 12)
+postgresql_recovery_target: ""                     # (>= 12)
+postgresql_recovery_target_name: ""                # (>= 12)
+postgresql_recovery_target_time: ""                # (>= 12)
+postgresql_recovery_target_xid: ""                 # (>= 12)
+postgresql_recovery_target_lsn: ""                 # (>= 12)
+postgresql_recovery_target_inclusive: ""           # (>= 12)
+postgresql_recovery_target_timeline: "latest"      # (>= 12)
+postgresql_recovery_target_action: "pause"         # (>= 12)
+postgresql_primary_conninfo: ""                    # (>= 12)
+postgresql_primary_slot_name: ""                   # (>= 12)
+postgresql_promote_trigger_file: ""                # (>= 12)
+postgresql_recovery_min_apply_delay: 0             # (>= 12)
 
 #------------------------------------------------------------------------------
 # REPLICATION
@@ -381,7 +415,8 @@ postgresql_cursor_tuple_fraction:      0.1          # range 0.0-1.0
 postgresql_from_collapse_limit:        8
 postgresql_join_collapse_limit:        8            # 1 disables collapsing of explicit
 postgresql_force_parallel_mode:        "off"        # (>= 9.6)
-postgresql_jit:                        off          # (>= 11) allow JIT compilation
+postgresql_jit: "{{ 'off' if postgresql_version|float < 12 else 'on' }}"        # (>= 11: off, 12: on)
+postgresql_plan_cache_mode:            "auto"       # (>= 12)
 
 #------------------------------------------------------------------------------
 # ERROR REPORTING AND LOGGING
@@ -469,6 +504,7 @@ postgresql_log_min_error_statement: "error"
 # -1 is disabled, 0 logs all statements and their durations, > 0 logs only
 # statements running at least this number of milliseconds
 postgresql_log_min_duration_statement: -1
+postgresql_log_transaction_sample_rate: 0.0     # (>= 12)
 
 # - What to Log -
 
@@ -481,6 +517,7 @@ postgresql_log_connections:       off
 postgresql_log_disconnections:    off
 postgresql_log_duration:          off
 postgresql_log_error_verbosity:   "default"  # terse, default, or verbose messages
+postgresql_log_hostname:          off
 
 # Special values:
 #   %a = application name
@@ -559,7 +596,7 @@ postgresql_autovacuum_freeze_max_age: 200000000
 # maximum Multixact age before forced vacuum (>= 9.3)
 postgresql_autovacuum_multixact_freeze_max_age: 400000000
 # default vacuum cost delay for autovacuum, in milliseconds
-postgresql_autovacuum_vacuum_cost_delay: 20ms
+postgresql_autovacuum_vacuum_cost_delay: "{{ '20ms' if postgresql_version|float < 12 else '2ms' }}"  # (<= 11: 20ms, >=12: 2ms)
 # default vacuum cost limit for autovacuum,
 postgresql_autovacuum_vacuum_cost_limit: -1
 
@@ -574,6 +611,7 @@ postgresql_search_path: # schema names
   - "public"
 postgresql_default_tablespace: "" # a tablespace name, "" uses the default
 postgresql_temp_tablespaces: [] # a list of tablespace names
+postgresql_default_table_access_method: "heap"
 
 postgresql_check_function_bodies:          on
 postgresql_default_transaction_isolation:  "read committed"
@@ -680,6 +718,20 @@ postgresql_transform_null_equals:       off
 postgresql_exit_on_error: off
 # Reinitialize after backend crash?
 postgresql_restart_after_crash: on
+# Retry or panic on failure to fsync data?
+postgresql_data_sync_retry: off
+
+#------------------------------------------------------------------------------
+# CONFIG FILE INCLUDES
+#------------------------------------------------------------------------------
+
+# include files ending in '.conf' from
+# directory 'conf.d'
+postgresql_include_dir:        "conf.d"
+# include file only if it exists
+postgresql_include_if_exists:  false
+# include file
+postgresql_include:            false
 
 #------------------------------------------------------------------------------
 # PGTUNE
@@ -692,6 +744,10 @@ postgresql_pgtune_memory: no
 postgresql_pgtune_type: "Mixed"
 # Maximum number of expected connections, if "no", default based on db type
 postgresql_pgtune_connections: no
+
+#------------------------------------------------------------------------------
+# INSTALL/REPO
+#------------------------------------------------------------------------------
 
 postgresql_env:
   LC_ALL: "{{ postgresql_locale }}"
