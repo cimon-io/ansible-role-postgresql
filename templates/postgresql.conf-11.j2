@@ -105,7 +105,7 @@ ssl_key_file = '{{postgresql_ssl_key_file}}'		# (change requires restart)
 ssl_ciphers = '{{postgresql_ssl_ciphers|join(':')}}'	# allowed SSL ciphers
 ssl_prefer_server_ciphers = {{ 'on' if postgresql_ssl_prefer_server_ciphers else 'off' }}		# (change requires restart)
 ssl_ecdh_curve = '{{postgresql_ssl_ecdh_curve}}'		# (change requires restart)
-ssl_dh_params_file = '{{postgresal_ssl_dh_params_file}}'
+ssl_dh_params_file = '{{postgresql_ssl_dh_params_file}}'
 ssl_passphrase_command = '{{postgresql_ssl_passphrase_command}}'
 ssl_passphrase_command_supports_reload = {{'on' if postgresql_ssl_passphrase_command_supports_reload else 'off'}}
 
