@@ -20,6 +20,8 @@ postgresql_users:
 postgresql_user_privileges:
   - name: baz
     db: foobar
+    type: database
+    priv: ALL
 
 postgresql_database_schemas:
   - database: foobar
