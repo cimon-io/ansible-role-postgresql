@@ -3,10 +3,10 @@ FROM ubuntu:20.04
 ARG PG_VERSION="10"
 ARG ANSIBLE_VERSION="2.8.0"
 
-RUN apt-get update -qq && apt-get install -qq python-apt python-pycurl \
-    python-pip python-dev libffi-dev libssl-dev locales sudo && \
+RUN apt-get update -qq && apt-get install -qq python3-apt python3-pycurl \
+    python3-pip python3-dev libffi-dev libssl-dev locales sudo && \
     echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
-RUN pip install -q ansible==$ANSIBLE_VERSION
+RUN pip3 install -q ansible==$ANSIBLE_VERSION
 
 WORKDIR /tmp/ansible-role-postgresql
 COPY  .  /tmp/ansible-role-postgresql
