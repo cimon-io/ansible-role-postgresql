@@ -1,4 +1,4 @@
-# file: postgresql/tasks/install_dnf.yml
+# file: postgresql/tasks/install_dnf_rh.yml
 
 # The standard ca-certs are needed because  without them dnf will fail to
 # validate www.postgresql.org (or probably any other source).
@@ -6,21 +6,24 @@
   - block:
       - name: PostgrSQL | Install all the required depedencies | dnf
         dnf:
-          name: "ca-certificates, python3-pycurl, glibc-common, libselinux-python3"
+          name: "ca-certificates, python3-pycurl, glibc-common, libselinux-python3, glibc-locale-source"
           state: present
 
       - name: PostgreSQL | Add yum Repository | dnf
-        yum_repository:
-          name: postgresql
+        dnf:
+          name: "{{ postgresql_dnf_rh_repository }}"
           state: present
-          description: postgresql yum repo
-          baseurl: "{{ postgresql_dnf_rh_repository_baseurl }}"
-          gpgkey: "{{ postgresql_dnf_rh_repository_gpgkey }}"
+        when: postgresql_install_repository
+
+      - name: PostgreSQL | Disable default module | dnf
+        command: "dnf -qy module disable postgresql"
+        args:
+          warn: False
         when: postgresql_install_repository
 
       - name: PostgreSQL | Install PostgreSQL | dnf
         dnf:
-          name: "postgresql{{ postgresql_version_terse }}-server, postgresql{{ postgresql_version_terse }}, postgresql{{ postgresql_version_terse }}-contrib"
+          name: ["postgresql{{ postgresql_version_terse }}-server", "postgresql{{ postgresql_version_terse }}", "postgresql{{ postgresql_version_terse }}-contrib"]
           state: present
         environment: "{{ postgresql_env }}"
 

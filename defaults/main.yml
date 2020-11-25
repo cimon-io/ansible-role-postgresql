@@ -797,8 +797,7 @@ postgresql_yum_repository_baseurl: "{{ postgresql_yum_repository_url }}/{{ postg
 postgresql_yum_repository_gpgkey: "{{ postgresql_pgdg_repository_url }}/RPM-GPG-KEY-PGDG"
 
 # DNF (CentOS) baseurl/gpgkey
-postgresql_dnf_rh_repository_baseurl: "{{ postgresql_yum_repository_url }}/{{ postgresql_version }}/{{ ansible_os_family | lower }}/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}"
-postgresql_dnf_rh_repository_gpgkey: "{{ postgresql_yum_repository_gpgkey }}"
+postgresql_dnf_rh_repository: "{{ postgresql_pgdg_repository_url }}/reporpms/EL-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm"
 
 # DNF (Fedora) baseurl/gpgkey
 postgresql_dnf_repository_baseurl: "{{ postgresql_yum_repository_url }}/{{ postgresql_version }}/fedora/fedora-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}"
